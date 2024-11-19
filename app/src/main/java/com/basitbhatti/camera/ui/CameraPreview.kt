@@ -8,7 +8,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun CameraPreview(modifier: Modifier = Modifier, controller: LifecycleCameraController) {
+fun CameraPreview(modifier: Modifier = Modifier,
+                  controller : LifecycleCameraController ) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -18,6 +19,5 @@ fun CameraPreview(modifier: Modifier = Modifier, controller: LifecycleCameraCont
             controller.bindToLifecycle(lifecycleOwner)
         }
     }, modifier = modifier)
-
 
 }
