@@ -3,6 +3,7 @@ package com.basitbhatti.camera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -13,18 +14,23 @@ import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.Cameraswitch
-import androidx.compose.material.icons.outlined.PhotoAlbum
+import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,7 +42,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -54,7 +62,6 @@ class MainActivity : ComponentActivity() {
         if (!checkRequiredPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 0)
         }
-
 
         setContent {
             CameraAppTheme {
@@ -102,25 +109,31 @@ class MainActivity : ComponentActivity() {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .height(90.dp)
+                                .background(Color.Black)
                                 .align(Alignment.BottomCenter),
+                            verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
 
                             IconButton(onClick = {
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.expand()
-                                }
+
                             }) {
                                 Icon(
-                                    imageVector = Icons.Outlined.PhotoAlbum,
-                                    contentDescription = "Gallery"
+                                    tint = Color.White,
+                                    imageVector = Icons.Outlined.Videocam,
+                                    contentDescription = "Capture Video"
                                 )
                             }
 
                             IconButton(onClick = {
+                                val mediaPlayer =
+                                    MediaPlayer.create(applicationContext, R.raw.sound)
+                                mediaPlayer.start()
                                 takePhoto(controller = controller, viewModel::onPhotoTaken)
                             }) {
                                 Icon(
+                                    tint = Color.White,
                                     modifier = Modifier.size(60.dp),
                                     imageVector = Icons.Outlined.Camera,
                                     contentDescription = "Take Photo"
@@ -128,14 +141,30 @@ class MainActivity : ComponentActivity() {
                             }
 
 
+                            Box(modifier = Modifier
+                                .size(50.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (bitmaps.size >= 1) {
+                                    Image(
+                                        modifier = Modifier
+                                            .size(50.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .clickable {
+                                                scope.launch {
+                                                    scaffoldState.bottomSheetState.expand()
+                                                }
+                                            },
+                                        bitmap = bitmaps.get(bitmaps.size - 1).asImageBitmap(),
+                                        contentDescription = ""
+                                    )
+                                }
+                            }
+
+
                         }
-
-
                     }
-
                 }
-
-
             }
         }
     }
@@ -149,7 +178,12 @@ class MainActivity : ComponentActivity() {
             object : OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
-                    onPhotoTaken(image.toBitmap())
+                    try {
+                        val bitmap = image.toBitmap()
+                        onPhotoTaken(bitmap)
+                    } finally {
+                        image.close()
+                    }
                 }
 
                 override fun onError(exception: ImageCaptureException) {
