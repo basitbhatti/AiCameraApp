@@ -7,14 +7,12 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class MainViewModel : ViewModel() {
 
-    private val _bitmaps = MutableStateFlow<List<Bitmap>>(emptyList())
 
+    private val _bitmaps = MutableStateFlow<List<Bitmap>>(emptyList())
     val bitmaps = _bitmaps.asStateFlow()
 
-    fun onPhotoTaken(bitmap: Bitmap){
+    fun onPhotoTaken(bitmap: Bitmap) {
         _bitmaps.value += bitmap
     }
-
-
 
 }

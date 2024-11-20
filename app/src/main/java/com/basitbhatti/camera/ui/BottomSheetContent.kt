@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -19,29 +20,31 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BottomSheetContent(modifier: Modifier = Modifier, bitmaps: List<Bitmap>) {
-
-    if (bitmaps.isEmpty()){
-        Box(modifier = modifier, contentAlignment = Alignment.Center){
-            Text(text = "No Images Yet")
+    if (bitmaps.isEmpty()) {
+        Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(text = "No Media Found!")
         }
     } else {
-
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
             contentPadding = PaddingValues(16.dp),
             verticalItemSpacing = 16.dp,
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = modifier
-
         ) {
+
             items(bitmaps) { bitmap ->
+
                 Image(
-                    bitmap = bitmap.asImageBitmap(), contentDescription = null,
-                    modifier = modifier.clip(RoundedCornerShape(12.dp))
+                    bitmap = bitmap.asImageBitmap(),
+                    contentDescription = "Media",
+                    modifier = modifier.clip(
+                        RoundedCornerShape(12.dp)
+                    )
                 )
 
             }
-        }
 
+        }
     }
 }

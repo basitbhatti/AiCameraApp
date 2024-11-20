@@ -141,12 +141,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun takePhoto(
-        controller : LifecycleCameraController,
-        onPhotoTaken : (Bitmap) -> Unit
-    ){
+        controller: LifecycleCameraController,
+        onPhotoTaken: (Bitmap) -> Unit
+    ) {
         controller.takePicture(
             ContextCompat.getMainExecutor(applicationContext),
-            object : OnImageCapturedCallback(){
+            object : OnImageCapturedCallback() {
                 override fun onCaptureSuccess(image: ImageProxy) {
                     super.onCaptureSuccess(image)
                     onPhotoTaken(image.toBitmap())
@@ -159,7 +159,6 @@ class MainActivity : ComponentActivity() {
             }
         )
     }
-
 
 
     private fun checkRequiredPermissions(): Boolean {
