@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Camera
 import androidx.compose.material.icons.outlined.Cameraswitch
+import androidx.compose.material.icons.outlined.PhotoAlbum
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -171,9 +172,18 @@ class MainActivity : ComponentActivity() {
                                     contentDescription = ""
                                 )
                             } else {
-                                Box(modifier = Modifier
-                                    .size(50.dp)
-                                    .clip(RoundedCornerShape(12.dp)) )
+                                IconButton(onClick = {
+                                    scope.launch {
+                                        scaffoldState.bottomSheetState.expand()
+                                    }
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.PhotoAlbum,
+                                        contentDescription = "Album",
+                                        tint = Color.White
+                                    )
+                                }
+
                             }
 
 
