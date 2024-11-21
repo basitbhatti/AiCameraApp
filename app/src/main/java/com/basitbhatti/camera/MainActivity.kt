@@ -38,8 +38,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,6 +67,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CameraAppTheme {
+
+                var isPhoto by remember {
+                    mutableStateOf(true)
+                }
+
+                val icon = if (isPhoto) {
+                    Icons.Outlined.Camera
+                } else {
+                    Icons.Outlined.Videocam
+                }
+
                 val viewModel = viewModel<MainViewModel>()
                 val bitmaps by viewModel.bitmaps.collectAsState()
 
@@ -117,11 +130,15 @@ class MainActivity : ComponentActivity() {
                         ) {
 
                             IconButton(onClick = {
-
+                                isPhoto = !isPhoto
                             }) {
                                 Icon(
                                     tint = Color.White,
-                                    imageVector = Icons.Outlined.Videocam,
+                                    imageVector = if (isPhoto) {
+                                        Icons.Outlined.Videocam
+                                    } else {
+                                        Icons.Outlined.Camera
+                                    },
                                     contentDescription = "Capture Video"
                                 )
                             }
@@ -135,30 +152,28 @@ class MainActivity : ComponentActivity() {
                                 Icon(
                                     tint = Color.White,
                                     modifier = Modifier.size(60.dp),
-                                    imageVector = Icons.Outlined.Camera,
+                                    imageVector = icon,
                                     contentDescription = "Take Photo"
                                 )
                             }
 
-
-                            Box(modifier = Modifier
-                                .size(50.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (bitmaps.size >= 1) {
-                                    Image(
-                                        modifier = Modifier
-                                            .size(50.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .clickable {
-                                                scope.launch {
-                                                    scaffoldState.bottomSheetState.expand()
-                                                }
-                                            },
-                                        bitmap = bitmaps.get(bitmaps.size - 1).asImageBitmap(),
-                                        contentDescription = ""
-                                    )
-                                }
+                            if (bitmaps.size >= 1) {
+                                Image(
+                                    modifier = Modifier
+                                        .size(50.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .clickable {
+                                            scope.launch {
+                                                scaffoldState.bottomSheetState.expand()
+                                            }
+                                        },
+                                    bitmap = bitmaps.get(bitmaps.size - 1).asImageBitmap(),
+                                    contentDescription = ""
+                                )
+                            } else {
+                                Box(modifier = Modifier
+                                    .size(50.dp)
+                                    .clip(RoundedCornerShape(12.dp)) )
                             }
 
 
