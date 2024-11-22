@@ -69,15 +69,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             CameraAppTheme {
 
-                var isPhoto by remember {
-                    mutableStateOf(true)
-                }
-
-                val icon = if (isPhoto) {
-                    Icons.Outlined.Camera
-                } else {
-                    Icons.Outlined.Videocam
-                }
 
                 val viewModel = viewModel<MainViewModel>()
                 val bitmaps by viewModel.bitmaps.collectAsState()
