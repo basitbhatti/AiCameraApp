@@ -121,19 +121,19 @@ class MainActivity : ComponentActivity() {
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
 
-                            IconButton(onClick = {
-                                isPhoto = !isPhoto
-                            }) {
-                                Icon(
-                                    tint = Color.White,
-                                    imageVector = if (isPhoto) {
-                                        Icons.Outlined.Videocam
-                                    } else {
-                                        Icons.Outlined.Camera
-                                    },
-                                    contentDescription = "Capture Video"
-                                )
-                            }
+//                            IconButton(onClick = {
+//                                isPhoto = !isPhoto
+//                            }) {
+//                                Icon(
+//                                    tint = Color.White,
+//                                    imageVector = if (isPhoto) {
+//                                        Icons.Outlined.Videocam
+//                                    } else {
+//                                        Icons.Outlined.Camera
+//                                    },
+//                                    contentDescription = "Capture Video"
+//                                )
+//                            }
 
                             IconButton(onClick = {
                                 val mediaPlayer =
