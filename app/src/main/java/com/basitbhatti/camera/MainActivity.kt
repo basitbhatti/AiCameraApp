@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.core.CameraSelector
@@ -69,6 +70,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             CameraAppTheme {
 
+                var isPhoto by remember {
+                    mutableStateOf(true)
+                }
 
                 val viewModel = viewModel<MainViewModel>()
                 val bitmaps by viewModel.bitmaps.collectAsState()
@@ -121,30 +125,43 @@ class MainActivity : ComponentActivity() {
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
 
-//                            IconButton(onClick = {
-//                                isPhoto = !isPhoto
-//                            }) {
-//                                Icon(
-//                                    tint = Color.White,
-//                                    imageVector = if (isPhoto) {
-//                                        Icons.Outlined.Videocam
-//                                    } else {
-//                                        Icons.Outlined.Camera
-//                                    },
-//                                    contentDescription = "Capture Video"
-//                                )
-//                            }
+                            IconButton(onClick = {
+                                isPhoto = !isPhoto
+                            }) {
+                                Icon(
+                                    imageVector = if (isPhoto) {
+                                        Icons.Outlined.Videocam
+                                    } else {
+                                        Icons.Outlined.Camera
+                                    },
+                                    contentDescription = "Switch Mode"
+                                )
+                            }
+
 
                             IconButton(onClick = {
-                                val mediaPlayer =
-                                    MediaPlayer.create(applicationContext, R.raw.sound)
-                                mediaPlayer.start()
+                                if (isPhoto) {
+                                    val mediaPlayer =
+                                        MediaPlayer.create(applicationContext, R.raw.sound)
+                                    mediaPlayer.start()
+                                } else {
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Video Mode is\nin progress",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
                                 takePhoto(controller = controller, viewModel::onPhotoTaken)
                             }) {
                                 Icon(
                                     tint = Color.White,
                                     modifier = Modifier.size(60.dp),
-                                    imageVector = icon,
+                                    imageVector = if (isPhoto) {
+                                        Icons.Outlined.Camera
+                                    } else {
+                                        Icons.Outlined.Videocam
+                                    },
                                     contentDescription = "Take Photo"
                                 )
                             }
