@@ -1,6 +1,7 @@
 package com.basitbhatti.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.media.MediaPlayer
@@ -13,8 +14,12 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture.OnImageCapturedCallback
 import androidx.camera.core.ImageCaptureException
 import androidx.camera.core.ImageProxy
+import androidx.camera.video.FileOutputOptions
+import androidx.camera.video.Recording
+import androidx.camera.video.VideoRecordEvent
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.video.AudioConfig
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -57,12 +62,17 @@ import com.basitbhatti.camera.ui.BottomSheetContent
 import com.basitbhatti.camera.ui.CameraPreview
 import com.basitbhatti.camera.ui.theme.CameraAppTheme
 import kotlinx.coroutines.launch
+import java.io.File
 
 class MainActivity : ComponentActivity() {
+
+
+    var recording : Recording? = null
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         if (!checkRequiredPermissions()) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, 0)
         }
@@ -87,7 +97,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                BottomSheetScaffold(
+                BottomSheetScaffold (
                     scaffoldState = scaffoldState,
                     sheetPeekHeight = 0.dp,
                     sheetContent = {
@@ -96,8 +106,8 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     Box(modifier = Modifier.padding(it)) {
-                        CameraPreview(modifier = Modifier.fillMaxSize(), controller)
 
+                        CameraPreview(modifier = Modifier.fillMaxSize(), controller)
 
                         IconButton(onClick = {
                             controller.cameraSelector = if (
@@ -129,6 +139,7 @@ class MainActivity : ComponentActivity() {
                                 isPhoto = !isPhoto
                             }) {
                                 Icon(
+                                    tint = Color.White,
                                     imageVector = if (isPhoto) {
                                         Icons.Outlined.Videocam
                                     } else {
@@ -137,7 +148,6 @@ class MainActivity : ComponentActivity() {
                                     contentDescription = "Switch Mode"
                                 )
                             }
-
 
                             IconButton(onClick = {
                                 if (isPhoto) {
@@ -191,7 +201,6 @@ class MainActivity : ComponentActivity() {
                                         tint = Color.White
                                     )
                                 }
-
                             }
 
 
@@ -200,6 +209,47 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun recordVideo(
+        controller: LifecycleCameraController
+    ){
+
+        if (recording!=null){
+            recording?.stop()
+            recording = null
+            return
+        }
+
+        if (checkRequiredPermissions()){
+            val file = File(filesDir, "my-recording.mp4")
+            recording = controller.startRecording(
+                FileOutputOptions.Builder(file).build(),
+                AudioConfig.create(true),
+                ContextCompat.getMainExecutor(applicationContext),
+            ){ event ->
+
+                when(event){
+
+                    is VideoRecordEvent.Finalize -> {
+                        if (event.hasError()){
+                            recording?.stop()
+                            recording = null
+                            Toast.makeText(applicationContext, "An error occurred!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(applicationContext, "Video recorded!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                }
+
+            }
+        } else {
+            ActivityCompat.requestPermissions(this@MainActivity, PERMISSIONS, 0)
+        }
+
+
     }
 
     private fun takePhoto(
