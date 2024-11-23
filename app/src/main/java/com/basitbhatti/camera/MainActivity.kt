@@ -80,11 +80,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             CameraAppTheme {
 
-                var isPhoto by remember {
-                    mutableStateOf(true)
-                }
+                var isPhoto by remember { mutableStateOf(true) }
 
                 val viewModel = viewModel<MainViewModel>()
+
                 val bitmaps by viewModel.bitmaps.collectAsState()
 
                 val scope = rememberCoroutineScope()
@@ -155,11 +154,7 @@ class MainActivity : ComponentActivity() {
                                         MediaPlayer.create(applicationContext, R.raw.sound)
                                     mediaPlayer.start()
                                 } else {
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Video Mode is\nin progress",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    recordVideo(controller)
                                 }
 
                                 takePhoto(controller = controller, viewModel::onPhotoTaken)
