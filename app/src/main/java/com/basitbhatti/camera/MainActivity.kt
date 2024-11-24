@@ -80,21 +80,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             CameraAppTheme {
 
-                var isPhoto by remember { mutableStateOf(true) }
-
-                val viewModel = viewModel<MainViewModel>()
-
-                val bitmaps by viewModel.bitmaps.collectAsState()
-
-                val scope = rememberCoroutineScope()
-
-                val scaffoldState = rememberBottomSheetScaffoldState()
-
-                val controller = remember {
-                    LifecycleCameraController(applicationContext).apply {
-                        setEnabledUseCases(CameraController.IMAGE_CAPTURE or CameraController.VIDEO_CAPTURE)
-                    }
-                }
 
                 BottomSheetScaffold (
                     scaffoldState = scaffoldState,
